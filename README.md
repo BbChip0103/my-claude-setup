@@ -59,6 +59,10 @@ install.sh 실행 후, Claude Code CLI 안에서 아래 명령어를 실행하�
 # claude-mem: 세션 간 메모리 유지
 /plugin marketplace add thedotmack/claude-mem
 /plugin install claude-mem@thedotmack
+
+# oh-my-claudecode (OMC): 멀티 에이전트 오케스트레이션
+/plugin marketplace add https://github.com/Yeachan-Heo/oh-my-claudecode.git omc
+/plugin install oh-my-claudecode@omc
 ```
 
 ## 스킬 (npx로 설치)
