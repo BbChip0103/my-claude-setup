@@ -46,9 +46,35 @@ fi
 
 # 4. Vercel 스킬 설치
 echo ""
-echo "[4/4] Vercel 스킬 설치 중..."
+echo "[4/7] Vercel 스킬 설치 중..."
 npx -y skills add vercel-labs/agent-skills -y
 echo "  -> 스킬 설치 완료"
+
+# 5. 에이전트 설치
+echo ""
+echo "[5/7] 에이전트(agents) 설치 중..."
+mkdir -p ~/.claude/agents
+cp "$SCRIPT_DIR"/.claude/agents/*.md ~/.claude/agents/
+echo "  -> ~/.claude/agents/ 에 복사 완료"
+
+# 6. 훅 설치
+echo ""
+echo "[6/7] 훅(hooks) 설치 중..."
+mkdir -p ~/.claude/hooks
+cp "$SCRIPT_DIR"/.claude/hooks/* ~/.claude/hooks/
+chmod +x ~/.claude/hooks/*.sh
+echo "  -> 훅 파일 복사 및 실행 권한 부여 완료"
+echo "  -> npm 의존성 설치 중..."
+(cd ~/.claude/hooks && npm install --silent)
+echo "  -> ~/.claude/hooks/ 설치 완료"
+
+# 7. skill-developer 스킬 설치
+echo ""
+echo "[7/7] skill-developer 스킬 설치 중..."
+mkdir -p ~/.claude/skills/skill-developer
+cp "$SCRIPT_DIR"/.claude/skills/skill-developer/* ~/.claude/skills/skill-developer/
+cp "$SCRIPT_DIR"/.claude/skills/skill-rules.json ~/.claude/skills/skill-rules.json
+echo "  -> ~/.claude/skills/skill-developer/ 설치 완료"
 
 echo ""
 echo "========================================="
@@ -64,6 +90,11 @@ echo "사용 가능한 커맨드:"
 for f in ~/.claude/commands/*.md; do
     name=$(basename "$f" .md)
     echo "  - /$name"
+done
+echo ""
+echo "설치된 에이전트:"
+for f in ~/.claude/agents/*.md; do
+    echo "  - $(basename "$f" .md)"
 done
 echo ""
 echo "========================================="

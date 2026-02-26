@@ -1,0 +1,7 @@
+.omc/
+.agents/
+.claude/hooks/node_modules/
+.claude/hooks/package-lock.json
+.claude/hooks/dist/
+.claude/skills/vercel-*
+.claude/skills/web-design-guidelines
