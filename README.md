@@ -29,7 +29,7 @@ chmod +x install.sh
 
 ```
 my-claude-setup/
-├── install.sh              # 원클릭 설치 스크립트
+├── install.sh              # 원클릭 설치 스크립트 (7단계)
 ├── rules/                  # ~/.claude/rules/ 에 복사되는 규칙들
 │   ├── default.md          # 기본 코딩 규칙
 │   ├── python.md           # Python 전용 규칙
@@ -43,7 +43,26 @@ my-claude-setup/
 │   ├── explain.md          # /explain 코드 설명 (주니어 눈높이)
 │   ├── debug.md            # /debug   에러 분석 및 해결
 │   └── refactor.md         # /refactor 리팩토링
-├── settings.json           # Claude Code 설정
+├── .claude/
+│   ├── agents/             # ~/.claude/agents/ 에 복사되는 전문 에이전트들
+│   │   ├── code-architecture-reviewer.md  # 아키텍처 일관성 리뷰
+│   │   ├── plan-reviewer.md               # 구현 계획 사전 검토
+│   │   ├── web-research-specialist.md     # 기술 문제 웹 리서치
+│   │   ├── auto-error-resolver.md         # TS 컴파일 에러 자동 수정
+│   │   ├── documentation-architect.md     # 문서 자동 생성
+│   │   └── refactor-planner.md            # 리팩토링 전략 수립
+│   ├── hooks/              # ~/.claude/hooks/ 에 복사되는 훅 스크립트들
+│   │   ├── skill-activation-prompt.sh/.ts # 프롬프트마다 스킬 자동 감지
+│   │   ├── stop-build-check-enhanced.sh   # 응답 완료 시 빌드 체크
+│   │   ├── error-handling-reminder.sh/.ts # 에러 처리 리마인더
+│   │   ├── post-tool-use-tracker.sh       # 파일 편집 후 TSC 체크
+│   │   ├── tsc-check.sh                   # TypeScript 검사
+│   │   ├── trigger-build-resolver.sh      # 빌드 에러 자동 해결 트리거
+│   │   └── package.json / tsconfig.json   # 훅 의존성
+│   └── skills/
+│       ├── skill-developer/               # 스킬 제작 가이드 (7개 문서)
+│       └── skill-rules.json               # 스킬 트리거 규칙 정의
+├── settings.json           # Claude Code 설정 (훅 포함)
 └── CLAUDE.md.template      # 프로젝트별 CLAUDE.md 템플릿
 ```
 
@@ -138,8 +157,50 @@ CLAUDE.md는 매 세션마다 로드됩니다. 길수록 기본 토큰이 늘어
 - 핵심 규칙만 남기고, 상세 내용은 별도 파일로 분리
 - `rules/` 폴더 활용 → 필요한 규칙만 선택 적용
 
+## 에이전트 사용법
+
+에이전트는 "이 에이전트 써서 [작업]해줘" 처럼 명시하면 됩니다.
+
+```
+# 코드 리뷰
+"code-architecture-reviewer 써서 방금 구현한 API 리뷰해줘"
+
+# 계획 검토
+"plan-reviewer 써서 이 구현 계획 검토해줘"
+
+# 에러 조사
+"web-research-specialist 써서 이 에러 원인 찾아줘"
+
+# TS 에러 대량 수정
+"auto-error-resolver 써서 빌드 에러 다 고쳐줘"
+```
+
+## 훅 동작 방식
+
+`settings.json`에 등록된 훅이 자동으로 실행됩니다:
+
+- **매 대화 시작** (`UserPromptSubmit`): `skill-activation-prompt` → 프롬프트 키워드 분석 후 관련 스킬 추천
+- **Claude 응답 완료** (`Stop`): `stop-build-check-enhanced` (빌드 체크) + `error-handling-reminder` (에러 처리 리마인더)
+
+## 참고 출처
+
+### diet103/claude-code-infrastructure-showcase
+- **참고 날짜**: 2026-02-26
+- **URL**: https://github.com/diet103/claude-code-infrastructure-showcase
+- **참고한 것**:
+  - `.claude/agents/` — 에이전트 6개 (code-architecture-reviewer, plan-reviewer, web-research-specialist, auto-error-resolver, documentation-architect, refactor-planner)
+  - `.claude/hooks/` — 훅 시스템 전체 (skill-activation-prompt, stop-build-check-enhanced, error-handling-reminder, post-tool-use-tracker, tsc-check, trigger-build-resolver)
+  - `.claude/skills/skill-developer/` — 스킬 제작 가이드 7개 문서
+  - `.claude/skills/skill-rules.json` — 스킬 트리거 규칙
+- **수정 사항**:
+  - `skill-activation-prompt.ts`: `$CLAUDE_PROJECT_DIR` 없을 때 `$HOME/.claude` 글로벌 경로로 폴백하도록 수정 (원본은 프로젝트 로컬만 지원)
+  - `settings.json`: 훅 경로를 `$HOME/.claude/hooks/`로 설정 (글로벌 설치 대응)
+  - `install.sh`: 에이전트/훅/스킬 자동 설치 단계 추가 (4단계 → 7단계)
+
 ## 커스터마이즈
 
 - `rules/` 에 `.md` 파일을 추가하면 규칙 추가
 - `commands/` 에 `.md` 파일을 추가하면 슬래시 커맨드 추가
 - 파일명이 곧 커맨드 이름 (예: `review.md` → `/review`)
+- `.claude/agents/` 에 `.md` 파일을 추가하면 에이전트 추가
+- `.claude/skills/skill-rules.json` 수정으로 스킬 트리거 규칙 커스터마이즈
