@@ -2,8 +2,10 @@
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+CLAUDE_DIR="$(pwd)/.claude"
 
 echo "=== Claude Code 환경 세팅 시작 ==="
+echo "  -> 설치 위치: $CLAUDE_DIR"
 
 # 0. Node.js 확인
 echo ""
@@ -22,26 +24,26 @@ fi
 # 1. rules 설치
 echo ""
 echo "[1/4] 규칙(rules) 설치 중..."
-mkdir -p ~/.claude/rules
-cp "$SCRIPT_DIR"/rules/*.md ~/.claude/rules/
-echo "  -> ~/.claude/rules/ 에 복사 완료"
+mkdir -p $CLAUDE_DIR/rules
+cp "$SCRIPT_DIR"/rules/*.md $CLAUDE_DIR/rules/
+echo "  -> $CLAUDE_DIR/rules/ 에 복사 완료"
 
 # 2. commands 설치
 echo ""
 echo "[2/4] 커맨드(commands) 설치 중..."
-mkdir -p ~/.claude/commands
-cp "$SCRIPT_DIR"/commands/*.md ~/.claude/commands/
-echo "  -> ~/.claude/commands/ 에 복사 완료"
+mkdir -p $CLAUDE_DIR/commands
+cp "$SCRIPT_DIR"/commands/*.md $CLAUDE_DIR/commands/
+echo "  -> $CLAUDE_DIR/commands/ 에 복사 완료"
 
 # 3. settings 설치
 echo ""
 echo "[3/4] 설정(settings) 설치 중..."
-if [ -f ~/.claude/settings.json ] && [ "$(cat ~/.claude/settings.json)" != "{}" ]; then
+if [ -f $CLAUDE_DIR/settings.json ] && [ "$(cat $CLAUDE_DIR/settings.json)" != "{}" ]; then
     echo "  -> 기존 settings.json이 있습니다. 덮어쓰지 않습니다."
     echo "  -> 수동으로 병합하려면: $SCRIPT_DIR/settings.json 를 참고하세요"
 else
-    cp "$SCRIPT_DIR"/settings.json ~/.claude/settings.json
-    echo "  -> ~/.claude/settings.json 복사 완료"
+    cp "$SCRIPT_DIR"/settings.json $CLAUDE_DIR/settings.json
+    echo "  -> $CLAUDE_DIR/settings.json 복사 완료"
 fi
 
 # 4. Vercel 스킬 설치
@@ -53,28 +55,28 @@ echo "  -> 스킬 설치 완료"
 # 5. 에이전트 설치
 echo ""
 echo "[5/7] 에이전트(agents) 설치 중..."
-mkdir -p ~/.claude/agents
-cp "$SCRIPT_DIR"/.claude/agents/*.md ~/.claude/agents/
-echo "  -> ~/.claude/agents/ 에 복사 완료"
+mkdir -p $CLAUDE_DIR/agents
+cp "$SCRIPT_DIR"/.claude/agents/*.md $CLAUDE_DIR/agents/
+echo "  -> $CLAUDE_DIR/agents/ 에 복사 완료"
 
 # 6. 훅 설치
 echo ""
 echo "[6/7] 훅(hooks) 설치 중..."
-mkdir -p ~/.claude/hooks
-cp "$SCRIPT_DIR"/.claude/hooks/* ~/.claude/hooks/
-chmod +x ~/.claude/hooks/*.sh
+mkdir -p $CLAUDE_DIR/hooks
+cp "$SCRIPT_DIR"/.claude/hooks/* $CLAUDE_DIR/hooks/
+chmod +x $CLAUDE_DIR/hooks/*.sh
 echo "  -> 훅 파일 복사 및 실행 권한 부여 완료"
 echo "  -> npm 의존성 설치 중..."
-(cd ~/.claude/hooks && npm install --silent)
-echo "  -> ~/.claude/hooks/ 설치 완료"
+(cd $CLAUDE_DIR/hooks && npm install --silent)
+echo "  -> $CLAUDE_DIR/hooks/ 설치 완료"
 
 # 7. skill-developer 스킬 설치
 echo ""
 echo "[7/7] skill-developer 스킬 설치 중..."
-mkdir -p ~/.claude/skills/skill-developer
-cp "$SCRIPT_DIR"/.claude/skills/skill-developer/* ~/.claude/skills/skill-developer/
-cp "$SCRIPT_DIR"/.claude/skills/skill-rules.json ~/.claude/skills/skill-rules.json
-echo "  -> ~/.claude/skills/skill-developer/ 설치 완료"
+mkdir -p $CLAUDE_DIR/skills/skill-developer
+cp "$SCRIPT_DIR"/.claude/skills/skill-developer/* $CLAUDE_DIR/skills/skill-developer/
+cp "$SCRIPT_DIR"/.claude/skills/skill-rules.json $CLAUDE_DIR/skills/skill-rules.json
+echo "  -> $CLAUDE_DIR/skills/skill-developer/ 설치 완료"
 
 echo ""
 echo "========================================="
@@ -82,18 +84,18 @@ echo "=== 자동 설치 완료! ==="
 echo "========================================="
 echo ""
 echo "적용된 규칙:"
-for f in ~/.claude/rules/*.md; do
+for f in $CLAUDE_DIR/rules/*.md; do
     echo "  - $(basename "$f")"
 done
 echo ""
 echo "사용 가능한 커맨드:"
-for f in ~/.claude/commands/*.md; do
+for f in $CLAUDE_DIR/commands/*.md; do
     name=$(basename "$f" .md)
     echo "  - /$name"
 done
 echo ""
 echo "설치된 에이전트:"
-for f in ~/.claude/agents/*.md; do
+for f in $CLAUDE_DIR/agents/*.md; do
     echo "  - $(basename "$f" .md)"
 done
 echo ""
